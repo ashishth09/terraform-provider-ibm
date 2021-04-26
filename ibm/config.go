@@ -16,6 +16,9 @@ import (
 
 	// Added code for the Power Colo Offering
 
+	"github.com/ibm-cloud-security/scc-go-sdk/findingsv1"
+	"github.com/ibm-cloud-security/scc-go-sdk/notificationsv1"
+
 	apigateway "github.com/IBM/apigateway-go-sdk"
 	"github.com/IBM/go-sdk-core/v4/core"
 	cosconfig "github.com/IBM/ibm-cos-sdk-go-config/resourceconfigurationv1"
@@ -252,6 +255,8 @@ type ClientSession interface {
 	SecretsManagerV1() (*secretsmanagerv1.SecretsManagerV1, error)
 	SchematicsV1() (*schematicsv1.SchematicsV1, error)
 	SatelliteClientSession() (*kubernetesserviceapiv1.KubernetesServiceApiV1, error)
+	FindingsV1API() (*findingsv1.FindingsV1, error)
+	NotificationsV1API() (*notificationsv1.NotificationsV1, error)
 }
 
 type clientSession struct {
@@ -494,6 +499,24 @@ type clientSession struct {
 	//Satellite service
 	satelliteClient    *kubernetesserviceapiv1.KubernetesServiceApiV1
 	satelliteClientErr error
+
+	//SA Findings Option
+	findingsErr error
+	findingsAPI *findingsv1.FindingsV1
+
+	//SA Notifications Option
+	notificationsErr error
+	notificationsAPI *notificationsv1.NotificationsV1
+}
+
+// FindingsAPI ...
+func (sess clientSession) FindingsV1API() (*findingsv1.FindingsV1, error) {
+	return sess.findingsAPI, sess.findingsErr
+}
+
+// NotificationsAPI ...
+func (sess clientSession) NotificationsV1API() (*notificationsv1.NotificationsV1, error) {
+	return sess.notificationsAPI, sess.notificationsErr
 }
 
 func (session clientSession) CatalogManagementV1() (*catalogmanagementv1.CatalogManagementV1, error) {
@@ -983,6 +1006,8 @@ func (c *Config) ClientSession() (interface{}, error) {
 		session.cisWAFRuleErr = errEmptyBluemixCredentials
 		session.iamIdentityErr = errEmptyBluemixCredentials
 		session.secretsManagerClientErr = errEmptyBluemixCredentials
+		session.findingsErr = errEmptyBluemixCredentials
+		session.notificationsErr = errEmptyBluemixCredentials
 
 		return session, nil
 	}
@@ -2027,6 +2052,24 @@ func (c *Config) ClientSession() (interface{}, error) {
 	}
 	// Enable retries for API calls
 	session.satelliteClient.Service.EnableRetries(c.RetryCount, c.RetryDelay)
+
+	findings, err := findingsv1.NewFindingsV1(&findingsv1.FindingsV1Options{
+		Authenticator: authenticator,
+		URL:           envFallBack([]string{"IBMCLOUD_SA_FINDINGS_ENDPOINT"}, fmt.Sprintf("https://%s.secadvisor.cloud.ibm.com/findings", c.Region)),
+	})
+	if err != nil {
+		session.findingsErr = fmt.Errorf("Error occured while configuring SA Findings service: %q", err)
+	}
+	session.findingsAPI = findings
+
+	notifications, err := notificationsv1.NewNotificationsV1(&notificationsv1.NotificationsV1Options{
+		Authenticator: authenticator,
+		URL:           envFallBack([]string{"IBMCLOUD_SA_NOTIFICATIONS_ENDPOINT"}, fmt.Sprintf("https://%s.secadvisor.cloud.ibm.com/notifications", c.Region)),
+	})
+	if err != nil {
+		session.notificationsErr = fmt.Errorf("Error occured while configuring SA Notifications service: %q", err)
+	}
+	session.notificationsAPI = notifications
 
 	return session, nil
 }

@@ -98,7 +98,34 @@ var tg_cross_network_id string
 //Enterprise Management
 var account_to_be_imported string
 
+// For SCC SI
+var note_id string
+var provider_id string
+var channel_id string
+var channel_name string
+
 func init() {
+	channel_id = os.Getenv("CHANNEL_ID")
+	if channel_id == "" {
+		channel_id = "83916490-9096-11eb-bafe-bbbaf5f4d2f4"
+		fmt.Println("[WARN] Running SCC SI tests with Channel ID as '83916490-9096-11eb-bafe-bbbaf5f4d2f4'. To run with custom provider, set environment variable CHANNEL_ID.")
+	}
+	channel_name = os.Getenv("CHANNEL_NAME")
+	if channel_name == "" {
+		channel_name = "test-channel"
+		fmt.Println("[WARN] Running SCC SI tests with Channel Name as 'test-channel'. To run with custom provider, set environment variable CHANNEL_ID.")
+	}
+	note_id = os.Getenv("NOTE_ID")
+	if note_id == "" {
+		note_id = "test-note"
+		fmt.Println("[WARN] Running SCC SI tests with Note ID as 'test-note'. To run with custom provider, set environment variable NOTE_ID.")
+	}
+	provider_id = os.Getenv("PROVIDER_ID")
+	if provider_id == "" {
+		provider_id = "test-provider"
+		fmt.Println("[WARN] Running SCC SI tests with Provider ID as 'test-provider'. To run with custom provider, set environment variable PROVIDER_ID.")
+	}
+
 	cfOrganization = os.Getenv("IBM_ORG")
 	if cfOrganization == "" {
 		fmt.Println("[WARN] Set the environment variable IBM_ORG for testing ibm_org  resource Some tests for that resource will fail if this is not set correctly")

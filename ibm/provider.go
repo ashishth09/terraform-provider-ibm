@@ -164,6 +164,9 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			"ibm_scc_si_providers":                   dataSourceIBMProviders(),
+			"ibm_scc_si_note":                        dataSourceIBMNote(),
+			"ibm_scc_si_notes":                       dataSourceIBMNotes(),
 			"ibm_api_gateway":                        dataSourceIBMApiGateway(),
 			"ibm_account":                            dataSourceIBMAccount(),
 			"ibm_app":                                dataSourceIBMApp(),
@@ -374,6 +377,7 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
+			"ibm_scc_si_note":                                    resourceIBMNote(),
 			"ibm_api_gateway_endpoint":                           resourceIBMApiGatewayEndPoint(),
 			"ibm_api_gateway_endpoint_subscription":              resourceIBMApiGatewayEndpointSubscription(),
 			"ibm_app":                                            resourceIBMApp(),
