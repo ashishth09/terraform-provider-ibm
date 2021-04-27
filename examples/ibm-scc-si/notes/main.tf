@@ -25,8 +25,8 @@
 
 # # Create Card
 # resource "ibm_scc_si_note" "card" {
-#   account_id = var.account_id
-#   provider_id                    = "terraform-test"
+#   account_id                     = var.account_id
+#   provider_id                    = var.provider_id
 #   short_description              = "short"
 #   long_description               = "long"
 #   kind                           = "CARD"
@@ -69,8 +69,8 @@
 
 # # Create Note
 # resource "ibm_scc_si_note" "note" {
-#   account_id = var.account_id
-#   provider_id                    = "terraform-test"
+#   account_id                     = var.account_id
+#   provider_id                    = var.provider_id
 #   short_description              = "short"
 #   long_description               = "long"
 #   kind                           = "FINDING"
